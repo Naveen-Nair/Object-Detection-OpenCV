@@ -39,7 +39,7 @@ void threshold(Mat &image, Mat &thresholded_image, int threshold_value){
 int main()
 {
     // Load the image
-    Mat image = imread("../Marathon.jpeg");
+    Mat image = imread("../images/Marathon.jpeg");
 
 
     // Create a new grayscale image with the same size as the input image

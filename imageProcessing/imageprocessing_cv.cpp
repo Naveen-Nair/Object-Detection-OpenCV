@@ -7,7 +7,7 @@ using namespace std;
 int main()
 {
     // Load the image
-    Mat image = imread("../Marathon.jpeg");
+    Mat image = imread("../images/Marathon.jpeg");
 
     // Convert the image to grayscale
     
