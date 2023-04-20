@@ -33,4 +33,6 @@
 
 .vscode
 .DS_Store
+imageProcessing/imageProcessing.out.dSYM
 
+imageProcessing/processing
