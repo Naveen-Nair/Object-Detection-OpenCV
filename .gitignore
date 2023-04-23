@@ -36,3 +36,5 @@
 imageProcessing/imageProcessing.out.dSYM
 
 imageProcessing/processing
+images/*
+imageProcessing/imageProcessing1.dSYM

@@ -8,6 +8,6 @@ An image will pop up, or else there is some error
 
 3. Check image processing
  cd imageProcessing
- g++ -std=c++11 -ggdb `pkg-config --cflags --libs opencv4` imageprocessing.cpp -o imageProcessing.out
+ g++ -std=c++17 -ggdb `pkg-config --cflags --libs opencv4` imageprocessing.cpp -o imageProcessing.out
  mkdir processing
  ./imageProcessing.out
