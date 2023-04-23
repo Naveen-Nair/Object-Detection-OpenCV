@@ -106,7 +106,7 @@ void threshold(Mat &image, Mat &thresholded_image)
     }
 }
 
-void gaussianBlur(const cv::Mat &input, cv::Mat &output, int kernel_size, double sigma)
+void gaussianBlur(const Mat &input, Mat &output, int kernel_size, double sigma)
 {
     int k = (kernel_size - 1) / 2;
     double kernel[kernel_size][kernel_size];
@@ -151,22 +151,7 @@ void gaussianBlur(const cv::Mat &input, cv::Mat &output, int kernel_size, double
     }
 }
 
-// void sobelOperator(Mat &image, Mat &grad){
-//      // Apply the Sobel operator to the input image
-//     Mat grad_x, grad_y;
-//     Mat abs_grad_x, abs_grad_y;
-//     cv::Sobel(image, grad_x, CV_16S, 1, 0, 3);
-//     cv::Sobel(image, grad_y, CV_16S, 0, 1, 3);
-//     cv::convertScaleAbs(grad_x, abs_grad_x);
-//     cv::convertScaleAbs(grad_y, abs_grad_y);
-//     cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
-
-//     imwrite("processing/5_grad_x.jpg", grad_x);
-//     imwrite("processing/5_grad_y.jpg", grad_y);
-//     imwrite("processing/5_grad.jpg", grad);
-// }
-
-void sobelOperator(const cv::Mat& image, cv::Mat& grad)
+void sobelOperator(const Mat& image, Mat& grad)
 {
     // Create kernels for Sobel operator
     const int kernelSize = 3;
@@ -174,8 +159,8 @@ void sobelOperator(const cv::Mat& image, cv::Mat& grad)
     int kernelY[kernelSize][kernelSize] = { {-1, -2, -1}, {0, 0, 0}, {1, 2, 1} };
 
     // Compute gradients
-    cv::Mat gradX(image.size(), CV_32FC1);
-    cv::Mat gradY(image.size(), CV_32FC1);
+    Mat gradX(image.size(), CV_32FC1);
+    Mat gradY(image.size(), CV_32FC1);
     for (int i = 1; i < image.rows - 1; i++)
     {
         for (int j = 1; j < image.cols - 1; j++)
@@ -195,21 +180,21 @@ void sobelOperator(const cv::Mat& image, cv::Mat& grad)
     }
 
     // Compute gradient magnitude and direction
-    cv::Mat mag(gradX.size(), CV_32FC1);
-    cv::Mat direction(gradX.size(), CV_32FC1);
+    Mat mag(gradX.size(), CV_32FC1);
+    Mat direction(gradX.size(), CV_32FC1);
     for (int i = 0; i < mag.rows; i++)
     {
         for (int j = 0; j < mag.cols; j++)
         {
             float gx = gradX.at<float>(i, j);
             float gy = gradY.at<float>(i, j);
-            mag.at<float>(i, j) = std::sqrt(gx * gx + gy * gy);
-            direction.at<float>(i, j) = std::atan2(gy, gx);
+            mag.at<float>(i, j) = sqrt(gx * gx + gy * gy);
+            direction.at<float>(i, j) = atan2(gy, gx);
         }
     }
 
     // Normalize gradient magnitude to range [0, 255]
-    cv::normalize(mag, mag, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+    normalize(mag, mag, 0, 255, NORM_MINMAX, CV_8UC1);
 
     // Set output to gradient magnitude
     grad = mag.clone();
@@ -222,11 +207,11 @@ void detectEdges(Mat &grad , vector<vector<Point>>& contours)
 {
    
     // Find contours in the gradient image
-    cv::findContours(grad, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    findContours(grad, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
     // Draw the contours on the gradient image
     Mat drawing = Mat::zeros(grad.size(), CV_8UC3);
-    cv::Scalar color(0, 255, 0); // Green color
+    Scalar color(0, 255, 0); // Green color
     int thickness = 1;
     for (size_t i = 0; i < contours.size(); i++)
     {
@@ -289,14 +274,14 @@ vector<vector<double>> extractFourierDescriptors(vector<vector<Point>> contours,
 
 struct KDNode
 {
-    std::vector<double> point;
+    vector<double> point;
     int splitDim;
     KDNode *left, *right;
-    KDNode(std::vector<double> &p, int dim) : point(p), splitDim(dim), left(nullptr), right(nullptr) {}
+    KDNode(vector<double> &p, int dim) : point(p), splitDim(dim), left(nullptr), right(nullptr) {}
 };
 
 // Compare function to sort feature vectors based on a specific dimension
-bool compareVectors(const vector<double> &a, const std::vector<double> &b, int dim)
+bool compareVectors(const vector<double> &a, const vector<double> &b, int dim)
 {
     return a[dim] < b[dim];
 }
@@ -307,7 +292,7 @@ KDNode *buildKdTree(vector<vector<double>> &featureVectors, int start, int end, 
     if (start > end)
         return nullptr;
     int dim = depth % featureVectors[0].size();
-    std::sort(featureVectors.begin() + start, featureVectors.begin() + end + 1, [dim](const std::vector<double> &a, const std::vector<double> &b)
+    sort(featureVectors.begin() + start, featureVectors.begin() + end + 1, [dim](const vector<double> &a, const vector<double> &b)
               { return compareVectors(a, b, dim); });
     int median = start + (end - start) / 2;
     KDNode *node = new KDNode(featureVectors[median], dim);
@@ -315,7 +300,7 @@ KDNode *buildKdTree(vector<vector<double>> &featureVectors, int start, int end, 
     node->right = buildKdTree(featureVectors, median + 1, end, depth + 1);
     return node;
 }
-double distance(const std::vector<double> &v1, const std::vector<double> &v2)
+double distance(const vector<double> &v1, const vector<double> &v2)
 {
     double dist = 0.0;
     for (size_t i = 0; i < v1.size(); i++)
@@ -326,13 +311,13 @@ double distance(const std::vector<double> &v1, const std::vector<double> &v2)
     return sqrt(dist);
 }
 
-std::vector<double> searchKDTree(KDNode *root, std::vector<double> &queryPoint)
+vector<double> searchKDTree(KDNode *root, vector<double> &queryPoint)
 {
-    double bestDist = std::numeric_limits<double>::max();
+    double bestDist = numeric_limits<double>::max();
     KDNode *bestNode = nullptr;
-    std::vector<double> bestPoint;
+    vector<double> bestPoint;
 
-    std::stack<KDNode *> nodesToVisit;
+    stack<KDNode *> nodesToVisit;
     nodesToVisit.push(root);
 
     while (!nodesToVisit.empty())
@@ -379,9 +364,9 @@ std::vector<double> searchKDTree(KDNode *root, std::vector<double> &queryPoint)
     return bestPoint;
 }
 
-std::vector<std::vector<double>> searchMatchingFeatureVectors(KDNode *root, std::vector<std::vector<double>> &featureVectors, double threshold)
+vector<vector<double>> searchMatchingFeatureVectors(KDNode *root, vector<vector<double>> &featureVectors, double threshold)
 {
-    std::vector<std::vector<double>> matchingFeatureVectors;
+    vector<vector<double>> matchingFeatureVectors;
 
     for (auto &featureVector : featureVectors)
     {
@@ -396,15 +381,15 @@ std::vector<std::vector<double>> searchMatchingFeatureVectors(KDNode *root, std:
     return matchingFeatureVectors;
 }
 
-std::vector<cv::Rect> searchAndComputeBoundingBoxes(KDNode *root, std::vector<std::vector<double>> &featureVectors, std::vector<std::vector<cv::Point>> &contours)
+vector<Rect> searchAndComputeBoundingBoxes(KDNode *root, vector<vector<double>> &featureVectors, vector<vector<Point>> &contours)
 {
-    std::vector<cv::Rect> boundingBoxes;
+    vector<Rect> boundingBoxes;
 
     // Search for matching feature vectors and compute bounding boxes
     for (int i = 0; i < featureVectors.size(); i++)
     {
-        std::vector<double> queryPoint = featureVectors[i];
-        std::vector<double> result = searchKDTree(root, queryPoint);
+        vector<double> queryPoint = featureVectors[i];
+        vector<double> result = searchKDTree(root, queryPoint);
 
         // Find the contour corresponding to the matching feature vector
         int matchingContourIndex = -1;
@@ -420,7 +405,7 @@ std::vector<cv::Rect> searchAndComputeBoundingBoxes(KDNode *root, std::vector<st
         // Compute the bounding box of the matching contour
         if (matchingContourIndex != -1)
         {
-            cv::Rect boundingBox = cv::boundingRect(contours[matchingContourIndex]);
+            Rect boundingBox = boundingRect(contours[matchingContourIndex]);
             if (boundingBox.width * boundingBox.height >= MINBOXSIZE)
             {
                 boundingBoxes.push_back(boundingBox);
@@ -498,12 +483,12 @@ int main()
     //     cout << endl;
     // }
 
-    std::vector<cv::Rect> boundingBoxes = searchAndComputeBoundingBoxes(root, matchingFeatureVectors, contours);
+    vector<Rect> boundingBoxes = searchAndComputeBoundingBoxes(root, matchingFeatureVectors, contours);
 
     // Loop over the detected objects and draw bounding boxes around them
     for (auto &bbox : boundingBoxes)
     {
-        cv::rectangle(image, bbox, cv::Scalar(0, 255, 0), 2);
+        rectangle(image, bbox, Scalar(0, 255, 0), 2);
     }
 
     // Display the image with the detected objects
