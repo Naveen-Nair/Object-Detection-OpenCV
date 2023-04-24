@@ -18,7 +18,7 @@ using namespace std;
 
 #define KERNEL_SIZE 3
 #define SIGMA 1
-#define IMG_PATH "../images/disadvantage.jpeg"
+#define IMG_PATH "../images/final/image28.jpg"
 
 #define MINBOXSIZE 1000
 
