@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "headerFiles/1.preprocessing.hpp"
+#include "1.preprocessing.hpp"
 #include "2.edgeDetection.hpp"
 #include "3.extractFeatures.hpp"
 #include "4.buildKDtree.hpp"
@@ -18,7 +18,7 @@ using namespace std;
 
 #define KERNEL_SIZE 3
 #define SIGMA 1
-#define IMG_PATH "../images/image.jpeg"
+#define IMG_PATH "../images/disadvantage.jpeg"
 
 #define MINBOXSIZE 1000
 

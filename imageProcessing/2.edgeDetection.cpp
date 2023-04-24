@@ -66,18 +66,22 @@ void detectEdges(Mat &grad, vector<vector<Point>> &contours)
     // Draw the contours on the gradient image
     Mat drawing = Mat::zeros(grad.size(), CV_8UC3);
     RNG rng(12345); // Random number generator
-    for (size_t i = 0; i < contours.size(); i++)
-    {
-        // Generate a random color for each contour
+    int thickness = 2;
+    for (size_t i = 0; i < contours.size(); i++) {
         Scalar color = Scalar(rng.uniform(0, 256), rng.uniform(0, 256), rng.uniform(0, 256));
 
-        // Approximate the contour with a polygonal curve
-        vector<Point> poly;
-        approxPolyDP(contours[i], poly, 3, true);
-
-        // Draw the polygonal curve
-        drawContours(drawing, vector<vector<Point>>{poly}, 0, color, 2);
+        for (size_t j = 0; j < contours[i].size(); j++) {
+            Point p1 = contours[i][j];
+            Point p2;
+            if (j < contours[i].size() - 1) {
+                p2 = contours[i][j + 1];
+            } else {
+                p2 = contours[i][0];
+            }
+            line(drawing, p1, p2, color, thickness);
+        }
     }
+
 
     // Display the image with the contours
     imwrite("processing/6_contours.jpg", drawing);
