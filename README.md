@@ -8,5 +8,5 @@ An image will pop up, or else there is some error
 
 3. Check image processing
  cd imageProcessing
- g++ -std=c++17 -ggdb `pkg-config --cflags --libs opencv4` imageprocessing.cpp -o imageProcessing.out
- ./imageProcessing.out
+ g++ -std=c++17 -ggdb `pkg-config --cflags --libs opencv4` imageprocessing.cpp 1.preprocessing.cpp 2.edgeDetection.cpp 3.extractFeatures.cpp 4.buildKDtree.cpp 5.matchFeatures.cpp 6.boundingBoxes.cpp
+ ./a.out
