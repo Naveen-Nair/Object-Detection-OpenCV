@@ -35,6 +35,6 @@
 .DS_Store
 imageProcessing/imageProcessing.out.dSYM
 
-imageProcessing/processing
+imageProcessing/processing/*
 images/*
 imageProcessing/imageProcessing1.dSYM
