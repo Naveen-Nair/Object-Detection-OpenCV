@@ -36,3 +36,6 @@
 imageProcessing/a.out.dSYM
 imageProcessing/processing/*
 imageProcessing/a.out.dSYM
+videoProcessing/a.out.dSYM
+videos/*
+images/*
